@@ -5,8 +5,10 @@ const fridgeRouter = require("./router")
 const app = express()
 app.use(cors())
 app.use(express.json())
+
 app.use("/api/fridge", fridgeRouter)
 
+// SEND ERROR MESSAGE
 app.use((err, req, res, next) => {
     if (err.status && err.msg) {
       res.status(err.status).send({ msg: err.msg });
@@ -15,6 +17,9 @@ app.use((err, req, res, next) => {
     }
   });
   
-  app.use((err, req, res, next) => {
+// ANY OTHER INTERNAL SERVER ERROR
+app.use((err, req, res, next) => {
     res.status(500).send({ msg: "Internal Server Error" });
   });
+
+module.exports = app
