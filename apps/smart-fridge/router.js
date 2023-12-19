@@ -1,41 +1,41 @@
 const app = require("./app")
 const express = require("express")
 
-exports.router = express.Router()
+const router = express.Router()
 
+// start items
 const fridgeContents = [
     {id: 0, item: "milk", quantity: 1},
     {id: 1, item: "butter", quantity: 3},
     {id: 2, item: "carrots", quantity: 9}
 ]
     
-// healthcheck
+// GET healthcheck
 router.get("/healthcheck", (req, res) => {
     res.status(200).send({health: "OK"})
 })
 
 // GET fridgecontents
 router.get("/", (req, res, next) => {
-    res.status(200).send(fridgeContents);
+    res.status(200).send({contents: fridgeContents});
 })
 
 // POST fridgecontents
-router.post("/", (res, req, next) => {
-    const body = req
+router.post("/", (req, res, next) => {
+    const sent = req.body
     const newId = fridgeContents.length
-    const newItem = {id: newId, ...body}
-    
-    if (!req.item || !req.quantity){
+    const newItem = {id: newId, ...sent}
+
+    if (!sent.item || !sent.quantity){
         res.status(400).send({message: "incompatible post request"})
     }
 
-    fridgeContents.push(body)
-
-    res.status(200).send({newItem: body})
+    fridgeContents.push(newItem)
+    res.status(201).send({addedItem: newItem})
 })
 
 // DELETE item in fridge
-router.delete("/:id", (res, req, next) => {
+router.delete("/:id", (req, res, next) => {
     const id = req.params.id
     
     if (id >= fridgeContents.length) {
@@ -46,3 +46,5 @@ router.delete("/:id", (res, req, next) => {
 
     res.status(201).send({message: "deletion successful!"})
 })
+
+module.exports = router
